@@ -1,4 +1,8 @@
+
 const charvester = {
+	/**
+	 * @param {Creep} creep
+	 */
 	run: function(creep)
 	{
 		// simple state machine
@@ -45,9 +49,15 @@ const charvester = {
 				if (!target || target.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
 					target = creep.room.find(FIND_MY_STRUCTURES, {
 						filter: (structure) => {
-							return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
+							return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_TOWER) &&
 								structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
 						}
+					}).sort((a, b) => {
+						if (a.structureType == STRUCTURE_TOWER && b.structureType != STRUCTURE_TOWER)
+							return 1;
+						if (a.structureType != STRUCTURE_TOWER && b.structureType == STRUCTURE_TOWER)
+							return -1;
+						return a.pos.getRangeTo(creep) - b.pos.getRangeTo(creep);
 					})[0];
 					if (!target) {
 						creep.memory.prev_state = state;

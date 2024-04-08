@@ -1,5 +1,6 @@
 const spawner_behavior = require('b.spawner');
 const worker_behavior = require('c.worker');
+const tower_behavior = require('t.basic');
 
 const tester = require('tester');
 
@@ -29,14 +30,22 @@ module.exports.loop = function () {
 		return creep.my;
 	});
 
+	var towers = _.filter(Game.structures, function(structure) {
+		return structure.structureType == STRUCTURE_TOWER;
+	});
+
 	for (let spawner of spawners) {
 		spawner_behavior.run(spawner, creeps);
 	}
 
+	
 	for (let creep of creeps) {
 		worker_behavior.run(creep, {jobs, creeps});
 	}
-
+	
+	for (let tower of towers) {
+		tower_behavior.run(tower);
+	}
 
 	tester.hauller();
 

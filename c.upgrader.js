@@ -16,6 +16,7 @@ const cupgrader = {
 				if (sourceID) {
 					source = Game.getObjectById(sourceID);
 				}
+				//console.log(source);
 				if (!source) {
 					source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 					creep.memory.sourceID = source.id;

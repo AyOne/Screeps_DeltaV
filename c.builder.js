@@ -42,7 +42,9 @@ const cbuilder = {
 					target = Game.getObjectById(targetID);
 				}
 				if (!target) {
-					target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+					target = creep.room.find(FIND_MY_CONSTRUCTION_SITES).sort((a, b) => {
+						return a.pos.getRangeTo(creep) - b.pos.getRangeTo(creep);
+					})[0];
 					if (!target) {
 						creep.memory.prev_state = state;
 						creep.memory.state = 'afk';

@@ -1,6 +1,6 @@
 const tester = {
 	hauller: function() {
-		let room = Game.rooms["W5N1"] || Game.rooms["sim"]
+		let room = Game.rooms["W1N7"] || Game.rooms["sim"]
 		let node = undefined;
 		let container = undefined;
 		if (!node || !container) {
