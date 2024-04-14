@@ -3,6 +3,7 @@ const worker_behavior = require('c.worker');
 const tower_behavior = require('t.basic');
 
 const tester = require('tester');
+//import * as _ from 'lodash';
 
 module.exports.loop = function () {
 
@@ -21,16 +22,16 @@ module.exports.loop = function () {
 
 
 
-	var jobs = {};
-	var spawners = _.filter(Game.spawns, function(spawn) {
+	let jobs = {};
+	let spawners = _.filter(Game.spawns, function(spawn) {
 		return spawn.my;
 	});
-	var creeps = _.filter(Game.creeps, function(creep) {
-		jobs[creep.memory.role] = jobs[creep.memory.role] + 1 || 1;
+	let creeps = _.filter(Game.creeps, function(creep) {
+		jobs[creep.memory["role"]] = jobs[creep.memory["role"]] + 1 || 1;
 		return creep.my;
 	});
 
-	var towers = _.filter(Game.structures, function(structure) {
+	let towers = _.filter(Game.structures, function(structure) {
 		return structure.structureType == STRUCTURE_TOWER;
 	});
 
@@ -48,5 +49,4 @@ module.exports.loop = function () {
 	}
 
 	tester.hauller();
-
 }

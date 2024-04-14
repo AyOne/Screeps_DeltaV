@@ -1,5 +1,3 @@
-
-
 const goal_amount = 12;
 const emergency_amount = 5;
 const worker_t1 = {body:[WORK, CARRY, MOVE, MOVE], cost:250, prefix:"Mk1_Worker"};
@@ -20,7 +18,7 @@ const hauller_presets = [hauller_t1, hauller_t2];
 
 
 const bSpawner = {
-	run: function(spawner, creeps) {
+	run: function(spawner:StructureSpawn, creeps:Creep[]) {
 		//console.log(creeps.length, emergency_amount, goal_amount, !spawner.spawning)
 		if (creeps.length < emergency_amount && !spawner.spawning) {
 			//console.log(spawner.spawnCreep(worker_t1.body, 'Worker' + Game.time, {memory: {role: 'none'}}));

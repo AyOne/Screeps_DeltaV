@@ -1,15 +1,15 @@
-const tester = {
+const module_tester = {
 	hauller: function() {
 		let room = Game.rooms["W1N7"] || Game.rooms["sim"]
-		let node = undefined;
-		let container = undefined;
+		let node:Source|undefined = undefined;
+		let container:AnyStructure|undefined = undefined;
 		if (!node || !container) {
 			let nodes = room.find(FIND_SOURCES);
 			for (let _node of nodes) {
 				//room.visual.circle(_node.pos, {fill: 'transparent', radius: 0.55, stroke: 'yellow'});
 				let miners = room.find(FIND_MY_CREEPS, {
 					filter: (c) => {
-						return c.memory.role == 'miner' && c.memory.nodeID == _node.id;
+						return c.memory["role"] == 'miner' && c.memory["nodeID"] == _node.id;
 					}
 				});
 				if (miners.length == 0) {
@@ -34,7 +34,7 @@ const tester = {
 
 
 
-				let position = undefined;
+				let position:RoomPosition|undefined = undefined;
 				if (!position) {
 					// the position need to be next to the container and the node at the same time. ( diagonal are allowed )
 					// the creep cannot be placed on the container or the node
@@ -47,10 +47,10 @@ const tester = {
 								continue;
 							}
 							let terrain = Game.map.getRoomTerrain(room.name).get(x, y);
-							if (terrain == 'wall') {
+							if (terrain & TERRAIN_MASK_WALL) {
 								continue;
 							}
-							let _position = new RoomPosition(x, y, room.name);
+							let _position:RoomPosition = new RoomPosition(x, y, room.name);
 							if (_position.inRangeTo(container, 1) && _position.inRangeTo(node, 1)) {
 								position = _position;
 								break;
@@ -60,8 +60,9 @@ const tester = {
 							break;
 						}
 					}
-
-					room.visual.circle(position, {fill: 'transparent', radius: 0.55, stroke: 'blue'});
+					if (position) {
+						room.visual.circle(position, {fill: 'transparent', radius: 0.55, stroke: 'blue'});
+					}
 				}
 
 
@@ -73,4 +74,4 @@ const tester = {
 	}
 }
 
-module.exports = tester;
+module.exports = module_tester;

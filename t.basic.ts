@@ -1,5 +1,5 @@
-const tower = {
-	run: function(tower)
+const module_tower = {
+	run: function(tower:StructureTower)
 	{
 		let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 		if(closestHostile) {
@@ -9,8 +9,8 @@ const tower = {
 
 		let closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
 			filter: (structure) => {
-				if (structure.structureType == STRUCTURE_WALL) {
-					return structure.hits < 500000;
+				if (structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART) {
+					return structure.hits < 10000;
 				}
 				return structure.hits < structure.hitsMax;
 			}
@@ -22,4 +22,4 @@ const tower = {
 	}
 }
 
-module.exports = tower;
+module.exports = module_tower;

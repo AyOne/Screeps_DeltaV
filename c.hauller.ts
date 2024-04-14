@@ -1,50 +1,48 @@
 // the hauller is a special type of creep that will only move creep without move part ( such as the miner ).
 // for now it only take the miner into account.
 
-const chauller = {
-	run: function(creep, {creeps})
+const module_hauller = {
+	run: function(creep:Creep, {creeps}: {creeps:Creep[]})
 	{
 		// first, we identify a miner in need of a lift
-		if (!creep.memory.lifted) {
-			let miner = undefined;
+		if (!creep.memory["lifted"]) {
+			let miner:Creep|undefined = undefined;
 			for (let _creep of creeps) {
-				if (_creep.memory.role == 'miner' && !_creep.memory.placed && !_creep.memory.lifted) {
+				if (_creep.memory["role"] == 'miner' && !_creep.memory["placed"] && !_creep.memory["lifted"]) {
 					miner = _creep;
 					break;
 				}
 			}
 
 			if (miner) {
-				creep.memory.lifted = miner.name;
-				miner.memory.lifted = true;
+				creep.memory["lifted"] = miner.name;
+				miner.memory["lifted"] = true;
 				creep.say('🚚');
 				creep.moveTo(miner);
 			} else {
-				creep.memory.lifted = undefined;
+				creep.memory["lifted"] = undefined;
 
 				let flag = Game.flags["AFK Haullers"];
 				if (flag) {
 					creep.moveTo(flag);
-				} else {
-					creep.moveTo(creep.room.controller);
 				}
 			}
 		} else {
-			let miner = Game.creeps[creep.memory.lifted];
+			let miner = Game.creeps[creep.memory["lifted"]];
 			if (miner && creep.pos.getRangeTo(miner) > 1){
 				creep.moveTo(miner);
 			} else {
 				// we are next to the miner
 				// we need to identify a node with no miner and a container next to it
-				let node = creep.memory.nodeID || undefined;
-				let container = creep.memory.containerID || undefined;
+				let node:Source|undefined = creep.memory["nodeID"] || undefined;
+				let container = creep.memory["containerID"] || undefined;
 				if (!node || !container) {
 					let nodes = creep.room.find(FIND_SOURCES);
 					for (let _node of nodes) {
 						//room.visual.circle(_node.pos, {fill: 'transparent', radius: 0.55, stroke: 'yellow'});
 						let miners = creep.room.find(FIND_MY_CREEPS, {
 							filter: (c) => {
-								return c.memory.role == 'miner' && c.memory.nodeID == _node.id;
+								return c.memory["role"] == 'miner' && c.memory["nodeID"] == _node.id;
 							}
 						});
 						if (miners.length == 0) {
@@ -60,8 +58,8 @@ const chauller = {
 						}
 					}
 					if (node && container) {
-						creep.memory.nodeID = node.id;
-						creep.memory.containerID = container.id;
+						creep.memory["nodeID"] = node.id;
+						creep.memory["containerID"] = container.id;
 					} else {
 						console.log("No node or container found for the miner " + miner.name);
 						creep.room.visual.circle(miner.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
@@ -70,8 +68,8 @@ const chauller = {
 					}
 				}
 
-				let position = creep.memory.position || undefined;
-				if (!position) {
+				let position:RoomPosition|undefined = creep.memory["position"] || undefined;
+				if (!position && node) {
 					// the position need to be next to the container and the node at the same time. ( diagonal are allowed )
 					// the creep cannot be placed on the container or the node
 					for (let x = node.pos.x - 1; x <= node.pos.x + 1; x++) {
@@ -82,8 +80,9 @@ const chauller = {
 							if (x == node.pos.x && y == node.pos.y) {
 								continue;
 							}
+							let room = node.room;
 							let terrain = Game.map.getRoomTerrain(room.name).get(x, y);
-							if (terrain == 'wall') {
+							if (terrain & TERRAIN_MASK_WALL) {
 								continue;
 							}
 							let _position = new RoomPosition(x, y, room.name);
@@ -97,31 +96,28 @@ const chauller = {
 						}
 					}
 					if (position) {
-						creep.memory.position = position;
+						creep.memory["position"] = position;
 					} else {
 						console.log("No position found for the miner " + miner.name);
 						creep.room.visual.circle(node.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
 						creep.room.visual.circle(container.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
 						creep.room.visual.circle(miner.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
 						creep.room.visual.circle(creep.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
-						creep.room.visual.line(node.pos, container.pos, {stroke: 'red'});
-						creep.room.visual.line(node.pos, miner.pos, {stroke: 'red'});
-						creep.room.visual.line(creep.pos, miner.pos, {stroke: 'red'});
+						creep.room.visual.line(node.pos, container.pos, {color: 'red'});
+						creep.room.visual.line(node.pos, miner.pos, {color: 'red'});
+						creep.room.visual.line(creep.pos, miner.pos, {color: 'red'});
 					}
 				}
-
-				if (creep.pos.x != position.x || creep.pos.y != position.y || creep.pos.roomName != position.roomName) {
+				if (position  && (creep.pos.x != position.x || creep.pos.y != position.y || creep.pos.roomName != position.roomName)) {
 					creep.pull(miner);
 					creep.moveTo(position);
 					miner.moveTo(creep);
 				} else {
 					
 				}
-
-
-
-
 			}
 		}
 	}
 };
+
+module.exports = module_hauller;
